@@ -10,6 +10,8 @@ triviatuple = [
 ]
 client = discord.Client()
 badwords = ["fuck", "shit", "dammit", "damn", "crap", "bitch", "fuq", "fuk"]
+with open('funfactgallery.txt') as f: # Tim added these two lines
+    funfactgallery = f.readlines()    # ''
 @client.event
 async def on_message(message):
     global badwordpeople
@@ -56,6 +58,11 @@ async def on_message(message):
 
     if message.content.lower().startswith("who is the best bot"):
         await message.channel.send("ME ME ME")
+
+    if message.content.startswith("^funfact"):              # Tim added these 4
+        fnum = random.randint(0, len(funfactgallery)-1)     # ''
+        await message.channel.send(funfactgallery[fnum])    # ''
+        print("funfact haha")                               # ''
 
 
 @client.event

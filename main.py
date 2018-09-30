@@ -1,6 +1,6 @@
 import random
 import discord
-TOKEN = ''
+TOKEN = 'NDk1NDgzMDc3NjI0MDcwMTU0.DpKi6A.phwwnjMnfZtnPHLqt6a4fIocxKc'
 #template code made by devdungeon.com\
 badwordpeople = []
 lookingforans ={"stat":False, "q":1}
@@ -10,6 +10,18 @@ triviatuple = [
 ]
 client = discord.Client()
 badwords = ["fuck", "shit", "dammit", "damn", "crap", "bitch", "fuq", "fuk"]
+
+
+async def battle_start(message):
+    await message.channel.send("BATTLE START!")
+    battling=True
+    return battling
+
+async def battle_end(message):
+    await message.channel.send("THE BATTLE IS OVER")
+    battling = False
+    return battling
+
 with open('funfactgallery.txt') as f: # Tim added these two lines
     funfactgallery = f.readlines()    # ''
 @client.event
@@ -17,6 +29,10 @@ async def on_message(message):
     global badwordpeople
     global lookingforans
     trivq = 0
+    battlestatus = False
+    dmg = 0
+    p1={}
+    p2={}
 
     if message.author == client.user:
         return
@@ -64,7 +80,39 @@ async def on_message(message):
         await message.channel.send(funfactgallery[fnum])    # ''
         print("funfact haha")                               # ''
 
+    if message.content.startswith("^battle") and len(message.content.split(" ")) > 2:
+        battlestatus = await battle_start(message)
+        p1={"p":message.content.split(" ")[1], "hp":30}
+        p2={"p":message.content.split(" ")[2], "hp":30}
+        print(p1)
+        print(p2)
+        print(message.author.mention)
+        return
+    elif message.content.startswith("^battle"):
+        await message.channel.send("Incorrect syntax, please specify 2 users")
 
+    if message.author.mention == p2["p"] and battlestatus==True:
+        print("p2 trigger")
+        dmg = random.randint(0, 10)
+        p1["hp"] -= dmg
+        await message.channel.send(message.author.mention + " HIT " + p1["p"] + " FOR " + str(dmg) + "DAMAGE!")
+        if dmg >=7:
+            await message.channel.send("THATS A LOTTA DAMAGE")
+        if p1["hp"] <=0:
+            battlestatus = await battle_end()
+            await message.channel.send(message.author.mention + "WINS!!!!!")
+    elif message.author.mention == p1["p"] and battlestatus==True:
+        print("p1 trigger")
+        dmg = random.randint(0, 10)
+        p2["hp"] -= dmg
+        await message.channel.send(message.author.mention + " HIT " + p2["p"] + " FOR " + str(dmg) + "DAMAGE!")
+        if dmg >=7:
+            await message.channel.send("THATS A LOTTA DAMAGE")
+        if p2["hp"] <=0:
+            battlestatus = await battle_end()
+            await message.channel.send(message.author.mention + "WINS!!!!!")
+    dmg = 0
+    print(message.author.mention)
 @client.event
 async def on_ready():
     print('Logged in as')

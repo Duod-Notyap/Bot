@@ -1,6 +1,6 @@
 import random
 import discord
-TOKEN = 'NDk1NDgzMDc3NjI0MDcwMTU0.DpKi6A.phwwnjMnfZtnPHLqt6a4fIocxKc'
+TOKEN = ''
 #template code made by devdungeon.com\
 badwordpeople = []
 lookingforans ={"stat":False, "q":1}

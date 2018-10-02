@@ -9,7 +9,7 @@ triviatuple = [
 {"q":"Who was the 16th president of the United States of America", "ans":"Abraham Lincoln"}
 ]
 client = discord.Client()
-badwords = ["fuck", "shit", "dammit", "damn", "crap", "bitch", "fuq", "fuk"]
+badwords = [<nothing child friendly here...>]
 
 
 async def battle_start(message):

@@ -10,7 +10,8 @@ triviatuple = [
 ]
 client = discord.Client()
 badwords = [<nothing child friendly here...>]
-
+p1 = {"p":"", "hp":30}
+p2 = {"p":"", "hp":30}
 
 async def battle_start(message):
     await message.channel.send("BATTLE START!")
@@ -31,8 +32,8 @@ async def on_message(message):
     trivq = 0
     battlestatus = False
     dmg = 0
-    p1={}
-    p2={}
+    global p1
+    global p2
 
     if message.author == client.user:
         return

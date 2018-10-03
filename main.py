@@ -10,7 +10,8 @@ triviatuple = [
 ]
 client = discord.Client()
 badwords = ["fuck", "shit", "dammit", "damn", "crap", "bitch", "fuq", "fuk"]
-
+p1 = {"p":"", "hp": 30}
+p2 = {"p":"", "hp": 30}
 
 async def battle_start(message):
     await message.channel.send("BATTLE START!")
@@ -31,8 +32,8 @@ async def on_message(message):
     trivq = 0
     battlestatus = False
     dmg = 0
-    p1={}
-    p2={}
+    global p1
+    global p2
 
     if message.author == client.user:
         return
@@ -79,7 +80,7 @@ async def on_message(message):
         fnum = random.randint(0, len(funfactgallery)-1)     # ''
         await message.channel.send(funfactgallery[fnum])    # ''
         print("funfact haha")                               # ''
-
+    print(str(battlestatus) + " " + p1["p"] + " " +p2["p"] + " " +str(message.author))
     if message.content.startswith("^battle") and len(message.content.split(" ")) > 2:
         battlestatus = await battle_start(message)
         p1={"p":message.content.split(" ")[1], "hp":30}
@@ -91,7 +92,7 @@ async def on_message(message):
     elif message.content.startswith("^battle"):
         await message.channel.send("Incorrect syntax, please specify 2 users")
 
-    if message.author.mention == p2["p"] and battlestatus==True:
+    if str(message.author) == p2["p"] and battlestatus==True:
         print("p2 trigger")
         dmg = random.randint(0, 10)
         p1["hp"] -= dmg
@@ -101,7 +102,7 @@ async def on_message(message):
         if p1["hp"] <=0:
             battlestatus = await battle_end()
             await message.channel.send(message.author.mention + "WINS!!!!!")
-    elif message.author.mention == p1["p"] and battlestatus==True:
+    elif str(message.author) == p1["p"] and battlestatus==True:
         print("p1 trigger")
         dmg = random.randint(0, 10)
         p2["hp"] -= dmg
@@ -113,6 +114,9 @@ async def on_message(message):
             await message.channel.send(message.author.mention + "WINS!!!!!")
     dmg = 0
     print(message.author.mention)
+
+    if "yeet" in message.content.lower():
+        await message.channel.send("***YEET***")
 @client.event
 async def on_ready():
     print('Logged in as')

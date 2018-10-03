@@ -1,6 +1,6 @@
 import random
 import discord
-TOKEN = 'NDk1NDgzMDc3NjI0MDcwMTU0.DpKi6A.phwwnjMnfZtnPHLqt6a4fIocxKc'
+TOKEN = ''
 #template code made by devdungeon.com\
 badwordpeople = []
 lookingforans ={"stat":False, "q":1}
@@ -9,9 +9,15 @@ triviatuple = [
 {"q":"Who was the 16th president of the United States of America", "ans":"Abraham Lincoln"}
 ]
 client = discord.Client()
+<<<<<<< HEAD
 badwords = ["fuck", "shit", "dammit", "damn", "crap", "bitch", "fuq", "fuk"]
 p1 = {"p":"", "hp": 30}
 p2 = {"p":"", "hp": 30}
+=======
+badwords = [<nothing child friendly here...>]
+p1 = {"p":"", "hp":30}
+p2 = {"p":"", "hp":30}
+>>>>>>> 628fba0043234374183d06c3a3349f13dd1cfbaa
 
 async def battle_start(message):
     await message.channel.send("BATTLE START!")

@@ -12,6 +12,7 @@ client = discord.Client()
 badwords = ["fuck", "shit", "dammit", "damn", "crap", "bitch", "fuq", "fuk"]
 p1 = {"p":"", "hp": 30}
 p2 = {"p":"", "hp": 30}
+battlestatus = False
 
 async def battle_start(message):
     await message.channel.send("BATTLE START!")
@@ -30,7 +31,7 @@ async def on_message(message):
     global badwordpeople
     global lookingforans
     trivq = 0
-    battlestatus = False
+    global battlestatus
     dmg = 0
     global p1
     global p2
@@ -82,8 +83,8 @@ async def on_message(message):
     print(str(battlestatus) + " " + p1["p"] + " " +p2["p"] + " " +"<@{}>".format(message.author.id))
     if message.content.startswith("^battle") and len(message.content.split(" ")) > 2:
         battlestatus = await battle_start(message)
-        p1={"p":message.content.split(" ")[1], "hp":30}
-        p2={"p":message.content.split(" ")[2], "hp":30}
+        p1={"p":message.content.split(" ")[1].replace("!", ""), "hp":30}
+        p2={"p":message.content.split(" ")[2].replace("!", ""), "hp":30}
         print(p1)
         print(p2)
         print(message.author.mention)
@@ -92,7 +93,7 @@ async def on_message(message):
         await message.channel.send("Incorrect syntax, please specify 2 users")
         print(battlestatus)
 
-    if "<@{}>".format(message.author.id) == p2["p"] and battlestatus==True:
+    if (("<@{}>".format(message.author.id) == p2["p"]) and battlestatus):
         print("p2 trigger")
         dmg = random.randint(0, 10)
         p1["hp"] -= dmg
@@ -100,9 +101,9 @@ async def on_message(message):
         if dmg >=7:
             await message.channel.send("THATS A LOTTA DAMAGE")
         if p1["hp"] <=0:
-            battlestatus = await battle_end()
+            battlestatus = await battle_end(message)
             await message.channel.send(message.author.mention + "WINS!!!!!")
-    elif "<@{}>".format(message.author.id) == p1["p"] and battlestatus==True:
+    elif (("<@{}>".format(message.author.id) == p1["p"]) and battlestatus):
         print("p1 trigger")
         dmg = random.randint(0, 10)
         p2["hp"] -= dmg
@@ -110,13 +111,20 @@ async def on_message(message):
         if dmg >=7:
             await message.channel.send("THATS A LOTTA DAMAGE")
         if p2["hp"] <=0:
-            battlestatus = await battle_end()
+            battlestatus = False
             await message.channel.send(message.author.mention + "WINS!!!!!")
     dmg = 0
     print(message.author.mention)
 
     if "yeet" in message.content.lower():
         await message.channel.send("***YEET***")
+
+    if message.content.startswith("^sad"):
+        await message.channel.send("This is so sad alexa play despacito")
+
+    if message.content.startswith("^source"):
+        await message.channel.send("https://github.com/Duod-Notyap/Bot/blob/master/main.py")
+
 @client.event
 async def on_ready():
     print('Logged in as')

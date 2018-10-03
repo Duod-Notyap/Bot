@@ -1,6 +1,6 @@
 import random
 import discord
-TOKEN = ''
+TOKEN = 'NDk1NDgzMDc3NjI0MDcwMTU0.Dpbbgw.t-EC7fYCMezsHb1D-_Hd4tq6X3A'
 #template code made by devdungeon.com\
 badwordpeople = []
 lookingforans ={"stat":False, "q":1}
@@ -9,15 +9,9 @@ triviatuple = [
 {"q":"Who was the 16th president of the United States of America", "ans":"Abraham Lincoln"}
 ]
 client = discord.Client()
-<<<<<<< HEAD
 badwords = ["fuck", "shit", "dammit", "damn", "crap", "bitch", "fuq", "fuk"]
 p1 = {"p":"", "hp": 30}
 p2 = {"p":"", "hp": 30}
-=======
-badwords = [<nothing child friendly here...>]
-p1 = {"p":"", "hp":30}
-p2 = {"p":"", "hp":30}
->>>>>>> 628fba0043234374183d06c3a3349f13dd1cfbaa
 
 async def battle_start(message):
     await message.channel.send("BATTLE START!")
@@ -77,7 +71,6 @@ async def on_message(message):
     if lookingforans["stat"] == True:
         print(triviatuple[lookingforans["q"]]["ans"].lower())
         print(message.content)
-    print(lookingforans["stat"])
 
     if message.content.lower().startswith("who is the best bot"):
         await message.channel.send("ME ME ME")
@@ -86,7 +79,7 @@ async def on_message(message):
         fnum = random.randint(0, len(funfactgallery)-1)     # ''
         await message.channel.send(funfactgallery[fnum])    # ''
         print("funfact haha")                               # ''
-    print(str(battlestatus) + " " + p1["p"] + " " +p2["p"] + " " +str(message.author))
+    print(str(battlestatus) + " " + p1["p"] + " " +p2["p"] + " " +"<@{}>".format(message.author.id))
     if message.content.startswith("^battle") and len(message.content.split(" ")) > 2:
         battlestatus = await battle_start(message)
         p1={"p":message.content.split(" ")[1], "hp":30}
@@ -97,8 +90,9 @@ async def on_message(message):
         return
     elif message.content.startswith("^battle"):
         await message.channel.send("Incorrect syntax, please specify 2 users")
+        print(battlestatus)
 
-    if str(message.author) == p2["p"] and battlestatus==True:
+    if "<@{}>".format(message.author.id) == p2["p"] and battlestatus==True:
         print("p2 trigger")
         dmg = random.randint(0, 10)
         p1["hp"] -= dmg
@@ -108,7 +102,7 @@ async def on_message(message):
         if p1["hp"] <=0:
             battlestatus = await battle_end()
             await message.channel.send(message.author.mention + "WINS!!!!!")
-    elif str(message.author) == p1["p"] and battlestatus==True:
+    elif "<@{}>".format(message.author.id) == p1["p"] and battlestatus==True:
         print("p1 trigger")
         dmg = random.randint(0, 10)
         p2["hp"] -= dmg

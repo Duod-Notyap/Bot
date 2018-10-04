@@ -1,15 +1,15 @@
 import random
 import discord
 TOKEN = 'NDk1NDgzMDc3NjI0MDcwMTU0.Dpbbgw.t-EC7fYCMezsHb1D-_Hd4tq6X3A'
-#template code made by devdungeon.com\
+
 badwordpeople = []
 lookingforans ={"stat":False, "q":1}
-triviatuple = [
+trivialist = [
 {"q":"What do Sea Cucumbers use as a self defense mechanism?", "ans":"organs"},
 {"q":"Who was the 16th president of the United States of America", "ans":"Abraham Lincoln"}
 ]
 client = discord.Client()
-badwords = ["fuck", "shit", "dammit", "damn", "crap", "bitch", "fuq", "fuk"]
+badwords = ["fuck", "shit", "dammit", "damn", "crap", "bitch", "fuq", "fuk", "feck", "fook", "dicc", "dick", "ass", "darn", "shoot", "heck", "shoot"]
 p1 = {"p":"", "hp": 30}
 p2 = {"p":"", "hp": 30}
 battlestatus = False
@@ -26,8 +26,11 @@ async def battle_end(message):
 
 with open('funfactgallery.txt') as f: # Tim added these two lines
     funfactgallery = f.readlines()    # ''
+
+#do on a new message
 @client.event
 async def on_message(message):
+    #set globally accessible variables
     global badwordpeople
     global lookingforans
     trivq = 0
@@ -36,51 +39,57 @@ async def on_message(message):
     global p1
     global p2
 
+#make the bot not respond to itself
     if message.author == client.user:
         return
 
+# ^die command returns "HECKIN' dies"
     if message.content.startswith('^die'):
         msg = 'HECKIN\' *dies*'.format(message)
         await message.channel.send(msg)
         print("Me: " + msg)
 
+#Swear counter
+    if message.author.roles[-1].permissions.administrator != True:
+        for word in badwords:
+            if word in message.content:
+                await message.channel.send("THAS A BAD WORD AND A NONO")
+                for curser in badwordpeople:
+                    if curser["p"] == message.author.id:
+                        curser["num"] += 1
+                        await message.channel.send("tsk tsk you've cursed {} times now".format(curser["num"]))
+                        return
+                badwordpeople.[len(badwordpeople)] = {"p": message.author.id, "num": 1}
+                await message.channel.send("tsk tsk you've cursed {} times now".format(badwordpeople[-1]["num"]))
 
-    for word in badwords:
-        if word in message.content:
-            await message.channel.send("THAS A BAD WORD AND A NONO")
-            '''
-            for person in badwordpeople:
-                if message.author == person["user"]:
-                    person["num"] += 1
-                    await message.channel.send("swear count: " + str(person["num"]))
-                    return
-            persontemp = badwordpeople[len(badwordpeople)] = {"user": message.author, "num": 1}
-            await message.channel.send("swear count: " + str(persontemp["num"]))
-            del persontemp
-            '''
-
+#trivia system, implementing as a file is on the todo list
     if message.content.startswith("^trivia"):
-        trivq = random.randint(0, len(triviatuple)-1)
-        await message.channel.send(triviatuple[trivq]["q"])
+        trivq = random.randint(0, len(trivialist)-1)
+        await message.channel.send(trivialist[trivq]["q"])
         lookingforans={"stat":True, "q":trivq}
         print(lookingforans)
 
-    if triviatuple[lookingforans["q"]]["ans"].lower() in message.content.lower() and lookingforans["stat"] == True:
+    if trivialist[lookingforans["q"]]["ans"].lower() in message.content.lower() and lookingforans["stat"] == True:
         await message.channel.send("Correct!")
         lookingforans["stat"] = False
 
     if lookingforans["stat"] == True:
-        print(triviatuple[lookingforans["q"]]["ans"].lower())
+        print(trivialist[lookingforans["q"]]["ans"].lower())
         print(message.content)
 
+#LiterallySatan is the best
     if message.content.lower().startswith("who is the best bot"):
         await message.channel.send("ME ME ME")
 
+#funfact system code thanks to Jauq  https://github.com/Jauq
     if message.content.startswith("^funfact"):              # Tim added these 4
         fnum = random.randint(0, len(funfactgallery)-1)     # ''
         await message.channel.send(funfactgallery[fnum])    # ''
-        print("funfact haha")                               # ''
-    print(str(battlestatus) + " " + p1["p"] + " " +p2["p"] + " " +"<@{}>".format(message.author.id))
+        print("funfact haha")
+                       # ''
+
+#this works, people spam it too fast and it canbt process and variables dont update changes blah blah its getting overloaded
+    '''
     if message.content.startswith("^battle") and len(message.content.split(" ")) > 2:
         battlestatus = await battle_start(message)
         p1={"p":message.content.split(" ")[1].replace("!", ""), "hp":30}
@@ -115,16 +124,20 @@ async def on_message(message):
             await message.channel.send(message.author.mention + "WINS!!!!!")
     dmg = 0
     print(message.author.mention)
-
+    '''
+#y e e t
     if "yeet" in message.content.lower():
         await message.channel.send("***YEET***")
 
+#alexa play despayeeto
     if message.content.startswith("^sad"):
-        await message.channel.send("This is so sad alexa play despacito")
+        await message.channel.send("This is so sad alexa play despayeeto")
 
+#returns url to source code
     if message.content.startswith("^source"):
         await message.channel.send("https://github.com/Duod-Notyap/Bot/blob/master/main.py")
 
+#log readiness of bot
 @client.event
 async def on_ready():
     print('Logged in as')
@@ -132,4 +145,5 @@ async def on_ready():
     print(client.user.id)
     print('------')
 
+#run the bot
 client.run(TOKEN)

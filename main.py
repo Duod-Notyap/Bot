@@ -1,5 +1,7 @@
 import random
 import discord
+import os
+
 TOKEN = 'NDk1NDgzMDc3NjI0MDcwMTU0.Dpbbgw.t-EC7fYCMezsHb1D-_Hd4tq6X3A'
 
 badwordpeople = []
@@ -9,21 +11,31 @@ trivialist = [
 {"q":"Who was the 16th president of the United States of America", "ans":"Abraham Lincoln"}
 ]
 client = discord.Client()
-badwords = ["fuck", "shit", "dammit", "damn", "crap", "bitch", "fuq", "fuk", "feck", "fook", "dicc", "dick", "ass", "darn", "shoot", "heck", "shoot"]
+badwords = ["fuck", "shit", "dammit", "damn", "crap", "bitch", "fuq", "fuk", "feck", "fook", "dicc", "dick", "ass", "darn", "shoot", "heck", "shoot", "effin", "bish", "hell"]
 p1 = {"p":"", "hp": 30}
 p2 = {"p":"", "hp": 30}
 battlestatus = False
-
+'''
 async def battle_start(message):
     await message.channel.send("BATTLE START!")
     battling=True
     return battling
-
+'''
+'''
 async def battle_end(message):
     await message.channel.send("THE BATTLE IS OVER")
     battling = False
     return battling
+'''
+#grab the saved word counters
+with open('badwordspeople.txt') as e:
+    for line in e.readlines():
+        print(line)
+        person = int(line.split("\'p\': ")[1].split(",")[0])
+        num = int(line.split("\'num\': ")[1].split("}")[0])
+        badwordpeople.append({"p":person, "num":num})
 
+#initialize the funfacts
 with open('funfactgallery.txt') as f: # Tim added these two lines
     funfactgallery = f.readlines()    # ''
 
@@ -52,15 +64,21 @@ async def on_message(message):
 #Swear counter
     if message.author.roles[-1].permissions.administrator != True:
         for word in badwords:
-            if word in message.content:
+            if " {}".format(word) in message.content.lower() or message.content.lower().startswith(word):
                 await message.channel.send("THAS A BAD WORD AND A NONO")
                 for curser in badwordpeople:
                     if curser["p"] == message.author.id:
+                        print("trigger counter")
                         curser["num"] += 1
                         await message.channel.send("tsk tsk you've cursed {} times now".format(curser["num"]))
                         return
-                badwordpeople.[len(badwordpeople)] = {"p": message.author.id, "num": 1}
+                badwordpeople.append({"p": message.author.id, "num": 1})
                 await message.channel.send("tsk tsk you've cursed {} times now".format(badwordpeople[-1]["num"]))
+        os.remove("badwordspeople.txt")
+        badwordfile = open("badwordspeople.txt", "w+")
+        for badperson in badwordpeople:
+            badwordfile.write(str(badperson))
+        badwordfile.close()
 
 #trivia system, implementing as a file is on the todo list
     if message.content.startswith("^trivia"):
@@ -136,6 +154,9 @@ async def on_message(message):
 #returns url to source code
     if message.content.startswith("^source"):
         await message.channel.send("https://github.com/Duod-Notyap/Bot/blob/master/main.py")
+
+    if message.content.startswith("^clear"):
+        message.channel.delete_messages(int(message.content.split(" ")[1]))
 
 #log readiness of bot
 @client.event

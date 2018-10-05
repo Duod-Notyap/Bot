@@ -6,10 +6,7 @@ TOKEN = 'NDk1NDgzMDc3NjI0MDcwMTU0.Dpbbgw.t-EC7fYCMezsHb1D-_Hd4tq6X3A'
 
 badwordpeople = []
 lookingforans ={"stat":False, "q":1}
-trivialist = [
-{"q":"What do Sea Cucumbers use as a self defense mechanism?", "ans":"organs"},
-{"q":"Who was the 16th president of the United States of America", "ans":"Abraham Lincoln"}
-]
+trivialist = []
 client = discord.Client()
 badwords = ["fuck", "shit", "dammit", "damn", "crap", "bitch", "fuq", "fuk", "feck", "fook", "dicc", "dick", "ass", "darn", "shoot", "heck", "shoot", "effin", "bish", "hell", "eff", "cock"]
 p1 = {"p":"", "hp": 30}

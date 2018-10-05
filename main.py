@@ -11,7 +11,7 @@ trivialist = [
 {"q":"Who was the 16th president of the United States of America", "ans":"Abraham Lincoln"}
 ]
 client = discord.Client()
-badwords = ["fuck", "shit", "dammit", "damn", "crap", "bitch", "fuq", "fuk", "feck", "fook", "dicc", "dick", "ass", "darn", "shoot", "heck", "shoot", "effin", "bish", "hell", "eff"]
+badwords = ["fuck", "shit", "dammit", "damn", "crap", "bitch", "fuq", "fuk", "feck", "fook", "dicc", "dick", "ass", "darn", "shoot", "heck", "shoot", "effin", "bish", "hell", "eff", "cock"]
 p1 = {"p":"", "hp": 30}
 p2 = {"p":"", "hp": 30}
 
@@ -35,6 +35,11 @@ with open('REPS.txt') as b:
         person = line.split("\'p\': ")[1].split(",")[0]
         num = int(line.split("\'rep\': ")[1].split("}")[0])
         repcounters.append({"p":person.replace("\'", ""), "rep":num})
+
+with open('triviaqfile.txt') as n:
+    for line in n.readlines():
+        q = line.split("[[[")
+        trivialist.append({"q":q[0], "ans":q[1]})
 #do on a new message
 @client.event
 async def on_message(message):

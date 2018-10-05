@@ -11,22 +11,12 @@ trivialist = [
 {"q":"Who was the 16th president of the United States of America", "ans":"Abraham Lincoln"}
 ]
 client = discord.Client()
-badwords = ["fuck", "shit", "dammit", "damn", "crap", "bitch", "fuq", "fuk", "feck", "fook", "dicc", "dick", "ass", "darn", "shoot", "heck", "shoot", "effin", "bish", "hell"]
+badwords = ["fuck", "shit", "dammit", "damn", "crap", "bitch", "fuq", "fuk", "feck", "fook", "dicc", "dick", "ass", "darn", "shoot", "heck", "shoot", "effin", "bish", "hell", "eff"]
 p1 = {"p":"", "hp": 30}
 p2 = {"p":"", "hp": 30}
-battlestatus = False
-'''
-async def battle_start(message):
-    await message.channel.send("BATTLE START!")
-    battling=True
-    return battling
-'''
-'''
-async def battle_end(message):
-    await message.channel.send("THE BATTLE IS OVER")
-    battling = False
-    return battling
-'''
+
+
+repcounters = []
 #grab the saved word counters
 with open('badwordspeople.txt') as e:
     for line in e.readlines():
@@ -39,6 +29,12 @@ with open('badwordspeople.txt') as e:
 with open('funfactgallery.txt') as f: # Tim added these two lines
     funfactgallery = f.readlines()    # ''
 
+with open('REPS.txt') as b:
+    for line in b.readlines():
+        print(line)
+        person = line.split("\'p\': ")[1].split(",")[0]
+        num = int(line.split("\'rep\': ")[1].split("}")[0])
+        repcounters.append({"p":person.replace("\'", ""), "rep":num})
 #do on a new message
 @client.event
 async def on_message(message):
@@ -50,7 +46,6 @@ async def on_message(message):
     dmg = 0
     global p1
     global p2
-
 #make the bot not respond to itself
     if message.author == client.user:
         return
@@ -71,6 +66,11 @@ async def on_message(message):
                         print("trigger counter")
                         curser["num"] += 1
                         await message.channel.send("tsk tsk you've cursed {} times now".format(curser["num"]))
+                        os.remove("badwordspeople.txt")
+                        badwordfile = open("badwordspeople.txt", "w+")
+                        for badperson in badwordpeople:
+                            badwordfile.write(str(badperson))
+                        badwordfile.close()
                         return
                 badwordpeople.append({"p": message.author.id, "num": 1})
                 await message.channel.send("tsk tsk you've cursed {} times now".format(badwordpeople[-1]["num"]))
@@ -79,6 +79,52 @@ async def on_message(message):
         for badperson in badwordpeople:
             badwordfile.write(str(badperson))
         badwordfile.close()
+
+
+
+
+#rep counter
+    if message.author.roles[-1].permissions.administrator == True:
+        if message.content.startswith("-rep"):
+            for person in repcounters:
+                if person["p"] == message.content.split(" ")[1]:
+                    print(person)
+                    person["rep"] -= 5
+                    await message.channel.send("OOF your rep is now {}".format(str(person["rep"])))
+                    os.remove("reps.txt")
+                    repfile = open("reps.txt", "w+")
+                    for person in repcounters:
+                        repfile.write(str(person))
+                    repfile.close()
+                    return
+            repcounters.append({"p":message.content.split(" ")[1], "rep": 35})
+            await message.channel.send("OOF your rep is now {}".format(str(repcounters[-1]["rep"])))
+            os.remove("reps.txt")
+            repfile = open("reps.txt", "w+")
+            for person in repcounters:
+                repfile.write(str(person))
+            repfile.close()
+        elif message.content.startswith("+rep"):
+            for person in repcounters:
+                if person["p"] == message.content.split(" ")[1]:
+                    print(person)
+                    person["rep"] += 5
+                    await message.channel.send("YAY your rep is now {}".format(str(person["rep"])))
+                    os.remove("reps.txt")
+                    repfile = open("reps.txt", "w+")
+                    for person in repcounters:
+                        repfile.write(str(person))
+                    repfile.close()
+                    return
+            repcounters.append({"p":message.content.split(" ")[1], "rep": 35})
+            await message.channel.send("YAY your rep is now {}".format(str(repcounters[-1]["rep"])))
+            os.remove("reps.txt")
+            repfile = open("reps.txt", "w+")
+            for person in repcounters:
+                repfile.write(str(person))
+            repfile.close()
+    print("this shouldnt print on a -rep: {}".format(message.content))
+    print(str(repcounters))
 
 #trivia system, implementing as a file is on the todo list
     if message.content.startswith("^trivia"):
@@ -104,45 +150,7 @@ async def on_message(message):
         fnum = random.randint(0, len(funfactgallery)-1)     # ''
         await message.channel.send(funfactgallery[fnum])    # ''
         print("funfact haha")
-                       # ''
 
-#this works, people spam it too fast and it canbt process and variables dont update changes blah blah its getting overloaded
-    '''
-    if message.content.startswith("^battle") and len(message.content.split(" ")) > 2:
-        battlestatus = await battle_start(message)
-        p1={"p":message.content.split(" ")[1].replace("!", ""), "hp":30}
-        p2={"p":message.content.split(" ")[2].replace("!", ""), "hp":30}
-        print(p1)
-        print(p2)
-        print(message.author.mention)
-        return
-    elif message.content.startswith("^battle"):
-        await message.channel.send("Incorrect syntax, please specify 2 users")
-        print(battlestatus)
-
-    if (("<@{}>".format(message.author.id) == p2["p"]) and battlestatus):
-        print("p2 trigger")
-        dmg = random.randint(0, 10)
-        p1["hp"] -= dmg
-        await message.channel.send(message.author.mention + " HIT " + p1["p"] + " FOR " + str(dmg) + "DAMAGE!")
-        if dmg >=7:
-            await message.channel.send("THATS A LOTTA DAMAGE")
-        if p1["hp"] <=0:
-            battlestatus = await battle_end(message)
-            await message.channel.send(message.author.mention + "WINS!!!!!")
-    elif (("<@{}>".format(message.author.id) == p1["p"]) and battlestatus):
-        print("p1 trigger")
-        dmg = random.randint(0, 10)
-        p2["hp"] -= dmg
-        await message.channel.send(message.author.mention + " HIT " + p2["p"] + " FOR " + str(dmg) + "DAMAGE!")
-        if dmg >=7:
-            await message.channel.send("THATS A LOTTA DAMAGE")
-        if p2["hp"] <=0:
-            battlestatus = False
-            await message.channel.send(message.author.mention + "WINS!!!!!")
-    dmg = 0
-    print(message.author.mention)
-    '''
 #y e e t
     if "yeet" in message.content.lower():
         await message.channel.send("***YEET***")
@@ -151,12 +159,24 @@ async def on_message(message):
     if message.content.startswith("^sad"):
         await message.channel.send("This is so sad alexa play despayeeto")
 
+
 #returns url to source code
     if message.content.startswith("^source"):
         await message.channel.send("https://github.com/Duod-Notyap/Bot/blob/master/main.py")
+#lets users check their reps
+    if message.content.startswith("^myrep"):
+        for person in repcounters:
+            if person["p"] == "<@{}>".format(str(message.author.id)):
+                await message.channel.send("Your rep is {}".format(person["rep"]))
+                return
+        await message.channel.send("You don't have a rep counter so its most likely at the base 40")
 
-    if message.content.startswith("^clear"):
-        message.channel.delete_messages(int(message.content.split(" ")[1]))
+    if message.content.startswith("^clear") and message.author.roles[-1].permissions.administrator == True:
+        msgs = []
+        mesgtodel = int(message.content.split(" ")[1])
+        async for x in message.channel.history():
+            msgs.append(x)
+        await message.channel.delete_messages(msgs)
 
 #log readiness of bot
 @client.event

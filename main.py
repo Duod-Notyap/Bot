@@ -54,12 +54,12 @@ async def on_message(message):
 
 # ^die command returns "HECKIN' dies"
     if message.content.startswith('^die'):
-        msg = 'HECKIN\' *dies*'.format(message)
+        msg = 'HECKIN\' *dies*'
         await message.channel.send(msg)
         print("Me: " + msg)
 
 #Swear counter
-    if message.author.roles[-1].permissions.administrator != True:
+    if message.author.roles[-1].permissions.administrator != True and message.author.id != 237948713123708939:
         for word in badwords:
             if " {}".format(word) in message.content.lower() or message.content.lower().startswith(word):
                 await message.channel.send("THAS A BAD WORD AND A NONO")
@@ -91,7 +91,10 @@ async def on_message(message):
             for person in repcounters:
                 if person["p"] == message.content.split(" ")[1]:
                     print(person)
-                    person["rep"] -= 5
+                    if len(message.content.split(" ")) >= 3:
+                        person["rep"] -= int(message.content.split(" ")[2])
+                    if len(message.content.split(" ")) == 2:
+                        person["rep"] -= 5
                     await message.channel.send("OOF your rep is now {}".format(str(person["rep"])))
                     os.remove("reps.txt")
                     repfile = open("reps.txt", "w+")
@@ -110,7 +113,10 @@ async def on_message(message):
             for person in repcounters:
                 if person["p"] == message.content.split(" ")[1]:
                     print(person)
-                    person["rep"] += 5
+                    if len(message.content.split(" ")) >= 3:
+                        person["rep"] += int(message.content.split(" ")[2])
+                    if len(message.content.split(" ")) == 2:
+                        person["rep"] += 5
                     await message.channel.send("YAY your rep is now {}".format(str(person["rep"])))
                     os.remove("reps.txt")
                     repfile = open("reps.txt", "w+")
@@ -125,8 +131,25 @@ async def on_message(message):
             for person in repcounters:
                 repfile.write(str(person))
             repfile.close()
-    print("this shouldnt print on a -rep: {}".format(message.content))
-    print(str(repcounters))
+        elif message.content.startswith("=rep"):
+            for person in repcounters:
+                if person["p"] == message.content.split(" ")[1]:
+                    print(person)
+                    person["rep"] = int(message.content.split(" ")[2])
+                    await message.channel.send("Your rep is now {}".format(str(person["rep"])))
+                    os.remove("reps.txt")
+                    repfile = open("reps.txt", "w+")
+                    for person in repcounters:
+                        repfile.write(str(person))
+                    repfile.close()
+                    return
+            repcounters.append({"p":message.content.split(" ")[1], "rep": 35})
+            await message.channel.send("Your rep is now {}".format(str(repcounters[-1]["rep"])))
+            os.remove("reps.txt")
+            repfile = open("reps.txt", "w+")
+            for person in repcounters:
+                repfile.write(str(person))
+            repfile.close()
 
 #trivia system, implementing as a file is on the todo list
     if message.content.startswith("^trivia"):
@@ -176,9 +199,11 @@ async def on_message(message):
     if message.content.startswith("^clear") and message.author.roles[-1].permissions.administrator == True:
         msgs = []
         mesgtodel = int(message.content.split(" ")[1])
-        async for x in message.channel.history():
-            msgs.append(x)
-        await message.channel.delete_messages(msgs)
+        await message.channel.delete_messages(await message.channel.history(limit=mesgtodel).flatten())
+
+    if message.content.startswith("^allreps") and message.author.roles[-1].permissions.administrator == True:
+        for i in repcounters:
+            await message.channel.send("{} has {} rep".format(i["p"], str(i["rep"])))
 
 #log readiness of bot
 @client.event

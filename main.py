@@ -1,17 +1,18 @@
 import random
 import discord
 import os
+import time
 
-TOKEN = 'NDk1NDgzMDc3NjI0MDcwMTU0.Dpbbgw.t-EC7fYCMezsHb1D-_Hd4tq6X3A'
+TOKEN = ''
 
 badwordpeople = []
 lookingforans ={"stat":False, "q":1}
 trivialist = []
 client = discord.Client()
-badwords = ["fuck", "shit", "dammit", "damn", "crap", "bitch", "fuq", "fuk", "feck", "fook", "dicc", "dick", "ass", "darn", "shoot", "heck", "shoot", "effin", "bish", "hell", "eff", "cock"]
+badwords = ["fuck", "shit", "dammit", "damn", "crap", "bitch", "fuq", "fuk", "feck", "fook", "dicc", "dick", "ass", "effin", "bish", "eff", "cock", "fack", "fak", "fek", "nigger", "owo", "uwu"]
 p1 = {"p":"", "hp": 30}
 p2 = {"p":"", "hp": 30}
-
+muted = []
 
 repcounters = []
 #grab the saved word counters
@@ -61,7 +62,8 @@ async def on_message(message):
 #Swear counter
     if message.author.roles[-1].permissions.administrator != True and message.author.id != 237948713123708939:
         for word in badwords:
-            if " {}".format(word) in message.content.lower() or message.content.lower().startswith(word):
+            strbad = message.content.lower()
+            if word in strbad:
                 await message.channel.send("THAS A BAD WORD AND A NONO")
                 for curser in badwordpeople:
                     if curser["p"] == message.author.id:
@@ -187,7 +189,7 @@ async def on_message(message):
 
 #returns url to source code
     if message.content.startswith("^source"):
-        await message.channel.send("https://github.com/Duod-Notyap/Bot/blob/master/main.py")
+        await message.channel.send("https://github.com/Duod-Notyap/Bot/")
 #lets users check their reps
     if message.content.startswith("^myrep"):
         for person in repcounters:
@@ -204,6 +206,26 @@ async def on_message(message):
     if message.content.startswith("^allreps") and message.author.roles[-1].permissions.administrator == True:
         for i in repcounters:
             await message.channel.send("{} has {} rep".format(i["p"], str(i["rep"])))
+
+#mutes a person
+    if message.content.lower().startswith("^mute") and message.author.roles[-1].permissions.administrator == True:
+        messagesplit = message.content.split(" ")
+        messagesplit[1] = messagesplit[1].replace("!", "")
+        muted.append({"name":int(messagesplit[1][2:-1]), "time":int(messagesplit[2]), "start":time.time()})
+        await message.channel.send("Oops {} just got muted for {} seconds!".format(messagesplit[1], messagesplit[2]))
+
+#test if a person is muted and stop the message
+    for user in muted:
+        if user["name"] == message.author.id and time.time()-user["start"]<user["time"]:
+            await message.delete()
+
+#remove an ended muting
+    for user in muted:
+        if time.time()-user["start"]>user["time"]:
+            muted.remove(user)
+
+    if message.content.startswith("^detime"):
+        await message.channel.send("It is currently {} despacitos since the epoch".format(str(int(time.time() / 227))))
 
 #log readiness of bot
 @client.event

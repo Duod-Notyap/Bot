@@ -3,7 +3,7 @@ import discord
 import os
 import time
 
-TOKEN = 'NDk1NDgzMDc3NjI0MDcwMTU0.Dpbbgw.t-EC7fYCMezsHb1D-_Hd4tq6X3A'
+TOKEN = ''
 
 badwordpeople = []
 lookingforans ={"stat":False, "q":1}

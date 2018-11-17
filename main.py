@@ -3,7 +3,7 @@ import discord
 import os
 import time
 
-TOKEN = ''
+TOKEN = 'NDk1NDgzMDc3NjI0MDcwMTU0.Dpbbgw.t-EC7fYCMezsHb1D-_Hd4tq6X3A'
 
 badwordpeople = []
 lookingforans ={"stat":False, "q":1}
@@ -211,6 +211,10 @@ async def on_message(message):
     if message.content.lower().startswith("^mute") and message.author.roles[-1].permissions.administrator == True:
         messagesplit = message.content.split(" ")
         messagesplit[1] = messagesplit[1].replace("!", "")
+        if len(messagesplit) == 2:
+            muted.append({"name":int(messagesplit[1][2:-1]), "time":9999999999999999, "start":time.time()})
+            await message.channel.send("{} got muted FOREVER".format(messagesplit[1]))
+            return;
         muted.append({"name":int(messagesplit[1][2:-1]), "time":int(messagesplit[2]), "start":time.time()})
         await message.channel.send("Oops {} just got muted for {} seconds!".format(messagesplit[1], messagesplit[2]))
 
@@ -226,6 +230,15 @@ async def on_message(message):
 
     if message.content.startswith("^detime"):
         await message.channel.send("It is currently {} despacitos since the epoch".format(str(int(time.time() / 227))))
+
+    if message.author.roles[-1].permissions.administrator == True and message.content.startswith("^unmute"):
+        splitted = message.content.split(" ")
+        for user in muted:
+            splitted[1] = splitted[1].replace("!", "")
+            print("{} : {} : {}".format(splitted[1], splitted[1][2:-1], user["name"]))
+            if int(splitted[1][2:-1]) == user["name"]:
+                muted.remove(user)
+                await message.channel.send("{} unmuted".format(splitted[1]))
 
 #log readiness of bot
 @client.event
